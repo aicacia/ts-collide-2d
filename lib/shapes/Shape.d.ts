@@ -1,0 +1,48 @@
+/// <reference types="node" />
+import { Option } from "@aicacia/core";
+import { EventEmitter } from "events";
+import { mat2d, vec2 } from "gl-matrix";
+import { AABB2 } from "../AABB2";
+import { Body } from "../Body";
+export declare abstract class Shape<UserData> extends EventEmitter {
+    protected body: Option<Body<UserData>>;
+    protected aabb: AABB2;
+    protected matrix: mat2d;
+    protected localPosition: vec2;
+    protected localRotation: number;
+    protected position: vec2;
+    protected rotation: number;
+    protected needsUpdate: boolean;
+    protected filterMask: number;
+    protected filterGroup: number;
+    protected density: number;
+    protected friction: number;
+    protected elasticity: number;
+    UNSAFE_setBody(body: Body<UserData>): this;
+    getBody(): Option<Body<UserData>>;
+    getFilterMask(): number;
+    setFilterMask(filterMask: number): this;
+    getFilterGroup(): number;
+    setFilterGroup(filterGroup: number): this;
+    getDensity(): number;
+    setDensity(density: number): this;
+    getFriction(): number;
+    setFriction(friction: number): this;
+    getElasticity(): number;
+    setElasticity(elasticity: number): this;
+    getAABB(): AABB2;
+    getPosition(): vec2;
+    getLocalPosition(): vec2;
+    setLocalPosition(position: vec2): this;
+    getLocalRotation(): number;
+    getRotation(): number;
+    setLocalRotation(localRotation: number): this;
+    setNeedsUpdate(needsUpdate?: boolean): this;
+    getNeedsUpdate(): boolean;
+    getMatrix(): mat2d;
+    updateIfNeeded(): this;
+    update(): this;
+    abstract getInertia(mass: number): number;
+    abstract getArea(): number;
+    abstract getCentroid(out: vec2): vec2;
+}

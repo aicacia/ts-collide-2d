@@ -1,0 +1,71 @@
+{
+  "name": "@aicacia/collide-2d",
+  "version": "0.1.0",
+  "description": "a 2d collide engine",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/aicacia/libs/ts-collide-2d.git"
+  },
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "ts-node node_modules/.bin/tape src/**/*.test.{ts,tsx} | tap-spec",
+    "coverage": "nyc --reporter=lcov --require ts-node/register tape src/**/*.test.{ts,tsx} | tap-spec; nyc report ---reporter=text",
+    "clean": "rm -rf ./lib",
+    "lint": "eslint . --fix",
+    "doc": "typedoc",
+    "simple": "parcel examples/simple/index.html"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm run coverage && npm run prepublishOnly"
+    }
+  },
+  "keywords": [
+    "collide",
+    "2d"
+  ],
+  "author": "Nathan Faucett",
+  "license": "(MIT OR Apache-2.0)",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "@types/tape": "^4.13.0",
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "husky": "^4.3.0",
+    "nyc": "^15.1.0",
+    "parcel": "^1.12.4",
+    "prettier": "^2.0.5",
+    "tap-nyc": "^1.0.3",
+    "tap-spec": "^5.0.0",
+    "tape": "^5.0.1",
+    "ts-node": "^9.0.0",
+    "tslib": "^2.0.2",
+    "typedoc": "^0.19.2",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "@aicacia/engine": "git+https://git@gitlab.com/aicacia/libs/ts-engine",
+    "@aicacia/core": "^0.1.7",
+    "@aicacia/hash": "^0.1.5",
+    "@aicacia/json": "^0.1.4",
+    "gl-matrix": "^3.3.0"
+  },
+  "nyc": {
+    "include": [
+      "src"
+    ],
+    "exclude": [
+      "src/**/*.test.*"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ]
+  }
+}
