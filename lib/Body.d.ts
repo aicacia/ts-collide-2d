@@ -3,23 +3,13 @@ import { Option } from "@aicacia/core";
 import { EventEmitter } from "events";
 import { mat2d, vec2 } from "gl-matrix";
 import { BodyEvent } from "./BodyEvent";
-import { BodyType } from "./BodyType";
 import { Shape } from "./shapes";
 export interface Body<UserData> {
     on(event: BodyEvent.COLLIDING | BodyEvent.COLLIDE_START | BodyEvent.COLLIDE_END, listener: (this: Body<UserData>, otherBody: Body<UserData>, contact: Contact<UserData>) => void): this;
 }
 export declare class Body<UserData> extends EventEmitter {
-    protected type: BodyType;
     protected world: Option<World<UserData>>;
     protected userData: Option<UserData>;
-    protected velocity: vec2;
-    protected angularVelocity: number;
-    protected linearDamping: Option<number>;
-    protected angularDamping: Option<number>;
-    protected mass: number;
-    protected invMass: number;
-    protected inertia: number;
-    protected invInertia: number;
     protected aabb: AABB2;
     protected position: vec2;
     protected rotation: number;
@@ -27,7 +17,6 @@ export declare class Body<UserData> extends EventEmitter {
     protected needsUpdate: boolean;
     protected aabbNeedsUpdate: boolean;
     protected shapes: Array<Shape<UserData>>;
-    getType(): BodyType;
     getUserData(): Option<UserData>;
     setUserData(userData: UserData): this;
     UNSAFE_setWorld(world: World<UserData>): this;
@@ -50,25 +39,6 @@ export declare class Body<UserData> extends EventEmitter {
     updateAABB(): this;
     addShapes(shapes: Array<Shape<UserData>>): this;
     addShape(...shapes: Array<Shape<UserData>>): this;
-    setType(type: BodyType): this;
-    getLinearDamping(): number;
-    setLinearDamping(linearDamping: number): this;
-    getAngularDamping(): number;
-    setAngularDamping(angularDamping: number): this;
-    getVelocity(): vec2;
-    setVelocity(velocity: vec2): this;
-    addVelocity(velocity: vec2): this;
-    getAngularVelocity(): number;
-    setAngularVelocity(angularVelocity: number): this;
-    addAngularVelocity(angularVelocity: number): this;
-    update(delta: number): this;
-    getMass(): number;
-    getInvMass(): number;
-    setMass(mass: number): this;
-    getInertia(): number;
-    getInvInertia(): number;
-    setInertia(inertia: number): this;
-    private resetMassData;
     private _addShape;
 }
 import { Contact } from "./phases/Contact";

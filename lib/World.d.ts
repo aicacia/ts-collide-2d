@@ -6,9 +6,6 @@ import { NarrowPhase } from "./phases/NarrowPhase";
 export declare const DEFAULT_LINEAR_DAMPING = 0.01;
 export declare const DEFAULT_ANGULAR_DAMPING: number;
 export declare class World<UserData> extends EventEmitter {
-    protected constraints: Array<Constraint<UserData>>;
-    protected constraintsToAdd: Array<Constraint<UserData>>;
-    protected constraintsToRemove: Array<Constraint<UserData>>;
     protected bodies: Array<Body<UserData>>;
     protected bodiesToAdd: Array<Body<UserData>>;
     protected bodiesToRemove: Array<Body<UserData>>;
@@ -16,16 +13,6 @@ export declare class World<UserData> extends EventEmitter {
     protected narrowPhase: NarrowPhase<UserData>;
     protected lastColliding: Map<number, Contact<UserData>>;
     protected colliding: Map<number, Contact<UserData>>;
-    protected linearDamping: number;
-    protected angularDamping: number;
-    getLinearDamping(): number;
-    setLinearDamping(linearDamping: number): this;
-    getAngularDamping(): number;
-    setAngularDamping(angularDamping: number): this;
-    addConstraints(constraints: Array<Constraint<UserData>>): this;
-    addConstraint(...constraints: Array<Constraint<UserData>>): this;
-    removeConstraints(constraints: Array<Constraint<UserData>>): this;
-    removeConstraint(...constraints: Array<Constraint<UserData>>): this;
     addBodies(bodies: Array<Body<UserData>>): this;
     addBody(...bodies: Array<Body<UserData>>): this;
     removeBodies(bodies: Array<Body<UserData>>): this;
@@ -33,11 +20,8 @@ export declare class World<UserData> extends EventEmitter {
     getBodies(): Body<UserData>[];
     maintain(): this;
     update(delta: number): this;
-    private addConstraintNow;
-    private removeConstraintNow;
     private addBodyNow;
     private removeBodyNow;
     private getHash;
 }
 import { Body } from "./Body";
-import { Constraint } from "./Constraint";

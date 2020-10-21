@@ -1,10 +1,6 @@
 export { Circle, Shape, Box, Convex } from "./shapes";
 export { Body } from "./Body";
-export { BodyType } from "./BodyType";
 export { BodyEvent } from "./BodyEvent";
-export { Constraint } from "./Constraint";
-export { GravityRelative } from "./GravityRelative";
-export { GravityUniversal } from "./GravityUniversal";
 export { World } from "./World";
 export { Collider2D } from "./components/Collider2D";
 export { Collider2DManager } from "./components/Collider2DManager";
