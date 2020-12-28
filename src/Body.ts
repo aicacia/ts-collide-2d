@@ -1,7 +1,7 @@
 import { none, Option } from "@aicacia/core";
 import { EventEmitter } from "events";
 import { mat2d, vec2 } from "gl-matrix";
-import { composeMat2d } from "@aicacia/engine";
+import { composeMat2d } from "@aicacia/ecs-game";
 import { BodyEvent } from "./BodyEvent";
 import { Shape } from "./shapes";
 

@@ -1,27 +1,28 @@
 import { vec2, vec4 } from "gl-matrix";
+import { Entity, Scene, Component } from "@aicacia/ecs";
 import {
   Camera2D,
   Camera2DControl,
-  Entity,
   FullScreenCanvas,
   Camera2DManager,
   Input,
-  Loop,
-  Scene,
+  EventLoop,
   Time,
   Transform2D,
-  Component,
   TransformComponent,
   Transform3D,
-} from "@aicacia/engine";
+} from "@aicacia/ecs-game";
 import {
   WebCanvas,
   WebEventListener,
   CtxRenderer,
   TransformCtxRendererHandler,
-} from "@aicacia/engine/lib/web";
+} from "@aicacia/ecs-game/lib/web";
 import { Body, BodyEvent, Circle, Collider2D, World, World2D } from "../../src";
-import { CtxBody2DRendererHandler } from "../../src/web";
+import {
+  CtxBody2DRendererHandler,
+  CtxContactRendererHandler,
+} from "../../src/web";
 
 const VEC2_0 = vec2.create();
 
@@ -88,6 +89,8 @@ function onLoad() {
         new Time(),
         // Handles all input
         new Input().addEventListener(new WebEventListener(canvas.getElement())),
+        // Handles requesting frames on events
+        new EventLoop(),
         // forces a canvas to stay in sync with the window size
         new FullScreenCanvas(canvas),
         new CtxRenderer(
@@ -95,17 +98,15 @@ function onLoad() {
           canvas.getElement().getContext("2d")
         ).addRendererHandler(
           new TransformCtxRendererHandler(),
-          new CtxBody2DRendererHandler()
+          new CtxBody2DRendererHandler(),
+          new CtxContactRendererHandler()
         ),
         new World2D(new World<Entity>())
-      ),
-    loop = new Loop(() => scene.update());
+      );
 
   (window as any).scene = scene;
-  (window as any).loop = loop;
 
-  document.body.appendChild(canvas.getElement());
-  loop.start();
+  scene.init();
 }
 
 window.addEventListener("load", onLoad);

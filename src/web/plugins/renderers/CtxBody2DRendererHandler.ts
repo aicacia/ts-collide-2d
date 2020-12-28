@@ -1,6 +1,6 @@
 import { vec4 } from "gl-matrix";
-import { toRgba } from "@aicacia/engine";
-import { CtxRendererHandler } from "@aicacia/engine/lib/web";
+import { toRgba } from "@aicacia/ecs-game";
+import { CtxRendererHandler } from "@aicacia/ecs-game/lib/web";
 import { Circle } from "../../../shapes/Circle";
 import { Collider2DManager } from "../../../components/Collider2DManager";
 
@@ -18,10 +18,11 @@ export class CtxBody2DRendererHandler extends CtxRendererHandler {
           .forEach((shape) => {
             renderer.render((ctx) => {
               if (shape instanceof Circle) {
-                ctx.fillStyle = toRgba(GREEN_VEC4);
+                ctx.strokeStyle = toRgba(GREEN_VEC4);
                 ctx.beginPath();
                 ctx.arc(0, 0, shape.getRadius(), 0, Math.PI * 2.0);
                 ctx.stroke();
+                ctx.closePath();
               }
             }, shape.getMatrix());
           });

@@ -1,4 +1,5 @@
-import { Component, Entity, TransformComponent } from "@aicacia/engine";
+import { Component, Entity } from "@aicacia/ecs";
+import { TransformComponent } from "@aicacia/ecs-game";
 import { Body } from "../Body";
 import { BodyEvent } from "../BodyEvent";
 import { Contact } from "../phases/Contact";

@@ -1,4 +1,5 @@
-import { Entity, Plugin, Time } from "@aicacia/engine";
+import { Entity, Plugin } from "@aicacia/ecs";
+import { Time } from "@aicacia/ecs-game";
 import { World } from "../World";
 
 export class World2D extends Plugin {

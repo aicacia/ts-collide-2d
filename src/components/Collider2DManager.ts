@@ -1,4 +1,4 @@
-import { DefaultManager } from "@aicacia/engine";
+import { DefaultManager } from "@aicacia/ecs";
 
 export class Collider2DManager extends DefaultManager<Collider2D> {}
 

@@ -13,11 +13,13 @@ export declare class World<UserData> extends EventEmitter {
     protected narrowPhase: NarrowPhase<UserData>;
     protected lastColliding: Map<number, Contact<UserData>>;
     protected colliding: Map<number, Contact<UserData>>;
+    protected contacts: Contact<UserData>[];
     addBodies(bodies: Array<Body<UserData>>): this;
     addBody(...bodies: Array<Body<UserData>>): this;
     removeBodies(bodies: Array<Body<UserData>>): this;
     removeBody(...bodies: Array<Body<UserData>>): this;
-    getBodies(): Body<UserData>[];
+    getBodies(): ReadonlyArray<Body<UserData>>;
+    getContacts(): ReadonlyArray<Contact<UserData>>;
     maintain(): this;
     update(delta: number): this;
     private addBodyNow;

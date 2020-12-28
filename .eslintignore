@@ -1,4 +1,4 @@
-.cache/
+.cache
 .vscode/
 nyc_output/
 dist/

@@ -20,6 +20,8 @@ export class World<UserData> extends EventEmitter {
   protected lastColliding: Map<number, Contact<UserData>> = new Map();
   protected colliding: Map<number, Contact<UserData>> = new Map();
 
+  protected contacts: Contact<UserData>[] = [];
+
   addBodies(bodies: Array<Body<UserData>>) {
     this.bodiesToAdd.push(...bodies);
     return this;
@@ -36,8 +38,12 @@ export class World<UserData> extends EventEmitter {
     return this.removeBodies(bodies);
   }
 
-  getBodies() {
+  getBodies(): ReadonlyArray<Body<UserData>> {
     return this.bodies;
+  }
+
+  getContacts(): ReadonlyArray<Contact<UserData>> {
+    return this.contacts;
   }
 
   maintain() {
@@ -93,6 +99,8 @@ export class World<UserData> extends EventEmitter {
         bj.emit(BodyEvent.COLLIDE_END, bi, contact);
       }
     }
+
+    this.contacts = contacts;
 
     return this;
   }

@@ -1,7 +1,7 @@
 import { IConstructor, none, Option } from "@aicacia/core";
 import { hash } from "@aicacia/hash";
 import { vec2 } from "gl-matrix";
-import { projectPointOnAxis } from "@aicacia/engine";
+import { projectPointOnAxis } from "@aicacia/ecs-game";
 import { Box, Circle, Convex, Shape } from "../shapes";
 import { Contact } from "./Contact";
 
