@@ -141,10 +141,13 @@ export abstract class Shape<UserData> extends EventEmitter {
 
     this.rotation = decomposeMat2d(this.matrix, this.position, VEC2_SCALE_0);
 
+    AABB2.identity(this.aabb);
+
     return this;
   }
 
   abstract getInertia(mass: number): number;
   abstract getArea(): number;
   abstract getCentroid(out: vec2): vec2;
+  abstract contains(point: vec2): boolean;
 }

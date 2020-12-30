@@ -45,4 +45,5 @@ export declare abstract class Shape<UserData> extends EventEmitter {
     abstract getInertia(mass: number): number;
     abstract getArea(): number;
     abstract getCentroid(out: vec2): vec2;
+    abstract contains(point: vec2): boolean;
 }

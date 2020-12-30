@@ -15,13 +15,14 @@ export class Box<UserData> extends Convex<UserData> {
 
   set(width: number, height: number) {
     const halfWidth = width * 0.5,
-      halfHeight = height * 0.5;
+      halfHeight = height * 0.5,
+      localPoints = this.getLocalPoints();
 
-    vec2.set(this.points[0], -halfWidth, halfHeight);
-    vec2.set(this.points[1], halfWidth, halfHeight);
-    vec2.set(this.points[2], halfWidth, -halfHeight);
-    vec2.set(this.points[3], -halfWidth, -halfHeight);
+    vec2.set(localPoints[0], -halfWidth, halfHeight);
+    vec2.set(localPoints[1], halfWidth, halfHeight);
+    vec2.set(localPoints[2], halfWidth, -halfHeight);
+    vec2.set(localPoints[3], -halfWidth, -halfHeight);
 
-    return this.setNeedsUpdate();
+    return this.setPoints(localPoints);
   }
 }

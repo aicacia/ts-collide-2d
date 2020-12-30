@@ -18,7 +18,15 @@ import {
   CtxRenderer,
   TransformCtxRendererHandler,
 } from "@aicacia/ecs-game/lib/web";
-import { Body, BodyEvent, Circle, Collider2D, World, World2D } from "../../src";
+import {
+  Body,
+  BodyEvent,
+  Box,
+  Circle,
+  Collider2D,
+  World,
+  World2D,
+} from "../../src";
 import {
   CtxBody2DRendererHandler,
   CtxContactRendererHandler,
@@ -55,7 +63,6 @@ function onLoad() {
   const canvas = new WebCanvas(
       document.getElementById("canvas") as HTMLCanvasElement
     ).set(256, 256),
-    body = new Body<Entity>().addShape(new Circle<Entity>().setDensity(200)),
     scene = new Scene()
       .addEntity(
         // Camera setup
@@ -64,25 +71,32 @@ function onLoad() {
           .addComponent(
             new Transform2D()
               .setRenderable(false)
-              .setLocalScale2(vec2.fromValues(9, 9)),
+              .setLocalScale2(vec2.fromValues(2, 2)),
             new Camera2DControl(),
             new Camera2D().setBackground(vec4.fromValues(0.98, 0.98, 0.98, 1.0))
           ),
         new Entity().addComponent(
           new StickToMouse(),
           new Transform2D().setLocalPosition(vec2.fromValues(0, 5)),
-          new Collider2D(new Body<Entity>().addShape(new Circle()))
+          new Collider2D(
+            new Body<Entity>().addShape(new Box<Entity>().set(2, 2))
+          )
             .on(BodyEvent.COLLIDING, () => {
-              console.log("colliding");
+              // console.log("colliding");
             })
             .on(BodyEvent.COLLIDE_START, () => {
-              console.log("collide-start");
+              // console.log("collide-start");
             })
             .on(BodyEvent.COLLIDE_END, () => {
-              console.log("collide-end");
+              // console.log("collide-end");
             })
         ),
-        new Entity().addComponent(new Transform2D(), new Collider2D(body))
+        new Entity().addComponent(
+          new Transform2D(),
+          new Collider2D(
+            new Body<Entity>().addShape(new Circle<Entity>().setDensity(200))
+          )
+        )
       )
       .addPlugin(
         // Required by many Components and plugins

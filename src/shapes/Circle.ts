@@ -1,6 +1,8 @@
 import { vec2 } from "gl-matrix";
 import { Shape } from "./Shape";
 
+const VEC_2_0 = vec2.create();
+
 export class Circle<UserData> extends Shape<UserData> {
   protected radius = 0.5;
 
@@ -28,6 +30,10 @@ export class Circle<UserData> extends Shape<UserData> {
     );
   }
 
+  contains(point: vec2): boolean {
+    return pointInCircle(point, this.getPosition(), this.radius);
+  }
+
   update() {
     super.update();
 
@@ -38,4 +44,9 @@ export class Circle<UserData> extends Shape<UserData> {
 
     return this;
   }
+}
+
+export function pointInCircle(point: vec2, center: vec2, radius: number) {
+  const d = vec2.sub(VEC_2_0, point, center);
+  return vec2.squaredLength(d) <= radius * radius;
 }

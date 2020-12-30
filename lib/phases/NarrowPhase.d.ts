@@ -10,6 +10,6 @@ export declare class NarrowPhase<UserData> {
     getHandler(si: Shape<UserData>, sj: Shape<UserData>): Option<IHandler>;
     private getHash;
 }
-export declare const circleToCircleHandler: <UserData>(si: Circle<UserData>, sj: Circle<UserData>, contacts: Contact<UserData>[]) => void;
-export declare const circleToConvexHandler: <UserData>(si: Circle<UserData>, sj: Convex<UserData>, _contacts: Contact<UserData>[]) => void;
+export declare function circleToCircleHandler<UserData>(si: Circle<UserData>, sj: Circle<UserData>, contacts: Array<Contact<UserData>>): void;
+export declare function circleToConvexHandler<UserData>(si: Circle<UserData>, sj: Convex<UserData>, contacts: Array<Contact<UserData>>): void;
 export {};

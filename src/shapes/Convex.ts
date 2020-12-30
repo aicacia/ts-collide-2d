@@ -1,6 +1,10 @@
-import { vec2 } from "gl-matrix";
+import { vec2, vec3 } from "gl-matrix";
 import { AABB2 } from "../AABB2";
 import { Shape } from "./Shape";
+
+const VEC2_0 = vec2.create(),
+  VEC2_1 = vec2.create(),
+  VEC3_0 = vec3.create();
 
 export class Convex<UserData> extends Shape<UserData> {
   protected localPoints: vec2[] = [];
@@ -9,14 +13,26 @@ export class Convex<UserData> extends Shape<UserData> {
   getPoints() {
     return this.points;
   }
+  getLocalPoints() {
+    return this.localPoints;
+  }
   setPoints(localPoints: vec2[]) {
     this.localPoints = localPoints;
 
-    this.points.length = 0;
-    localPoints.reduce((points, localPoint) => {
-      points.push(vec2.copy(vec2.create(), localPoint));
-      return points;
-    }, this.points);
+    if (this.points.length < localPoints.length) {
+      for (
+        let i = 0, il = localPoints.length - this.points.length;
+        i < il;
+        i++
+      ) {
+        this.points.push(vec2.create());
+      }
+    }
+    this.points.length = localPoints.length;
+
+    for (let i = 0, il = localPoints.length; i < il; i++) {
+      vec2.copy(this.points[i], localPoints[i]);
+    }
 
     return this.setNeedsUpdate();
   }
@@ -64,6 +80,10 @@ export class Convex<UserData> extends Shape<UserData> {
     return inertia;
   }
 
+  contains(point: vec2): boolean {
+    return pointInConvex(point, this.points);
+  }
+
   update() {
     super.update();
 
@@ -88,4 +108,33 @@ function triangleInertia(a: vec2, b: vec2, triangleMass: number): number {
   return (
     (triangleMass / 6) * (vec2.dot(a, a) + vec2.dot(b, b) + vec2.dot(a, b))
   );
+}
+
+export function pointInConvex(point: vec2, points: vec2[]): boolean {
+  const r0 = VEC2_0,
+    r1 = VEC2_1,
+    v3 = VEC3_0;
+
+  let lastCross = null;
+
+  for (let i = 0; i < points.length + 1; i++) {
+    const v0 = points[i % points.length],
+      v1 = points[(i + 1) % points.length];
+
+    vec2.subtract(r0, v0, point);
+    vec2.subtract(r1, v1, point);
+
+    const cross = vec2.cross(v3, r0, r1)[2];
+
+    if (lastCross === null) {
+      lastCross = cross;
+    }
+
+    if (cross * lastCross < 0) {
+      return false;
+    }
+    lastCross = cross;
+  }
+
+  return true;
 }

@@ -31,12 +31,12 @@ export class CtxContactRendererHandler extends CtxRendererHandler {
             ctx.beginPath();
             ctx.moveTo(contact.position[0], contact.position[1]);
             ctx.lineTo(
-              contact.position[0] + contact.normal[0] * -contact.depth,
-              contact.position[1] + contact.normal[1] * -contact.depth
+              contact.position[0] + contact.normal[0] * contact.depth,
+              contact.position[1] + contact.normal[1] * contact.depth
             );
             ctx.stroke();
             ctx.closePath();
-          }, contact.sj.getMatrix())
+          }, contact.si.getMatrix())
         );
     });
     return this;

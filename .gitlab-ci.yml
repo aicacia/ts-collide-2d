@@ -5,7 +5,7 @@ stages:
   - deploy
 
 before_script:
-  - npm run lint
+  - npm install
 
 cache:
   paths:
@@ -14,7 +14,7 @@ cache:
 test:
   stage: test
   script:
-    - npm install
+    - npm run lint
     - npm run coverage
   artifacts:
     paths:

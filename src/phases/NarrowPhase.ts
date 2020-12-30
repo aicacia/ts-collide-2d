@@ -1,8 +1,9 @@
-import { IConstructor, none, Option } from "@aicacia/core";
+import { IConstructor, none, Option, some } from "@aicacia/core";
 import { hash } from "@aicacia/hash";
 import { vec2 } from "gl-matrix";
-import { projectPointOnAxis } from "@aicacia/ecs-game";
 import { Box, Circle, Convex, Shape } from "../shapes";
+import { pointInCircle } from "../shapes/Circle";
+import { pointInConvex } from "../shapes/Convex";
 import { Contact } from "./Contact";
 
 type IHandler = <UserData>(
@@ -68,11 +69,11 @@ export class NarrowPhase<UserData> {
   }
 }
 
-export const circleToCircleHandler = <UserData>(
+export function circleToCircleHandler<UserData>(
   si: Circle<UserData>,
   sj: Circle<UserData>,
   contacts: Array<Contact<UserData>>
-) => {
+) {
   return circleToCircle(
     si,
     sj,
@@ -82,53 +83,74 @@ export const circleToCircleHandler = <UserData>(
     sj.getRadius(),
     contacts
   );
-};
+}
+
+export function circleToConvexHandler<UserData>(
+  si: Circle<UserData>,
+  sj: Convex<UserData>,
+  contacts: Array<Contact<UserData>>
+) {
+  return circleToConvex(
+    si,
+    sj,
+    si.getPosition(),
+    si.getRadius(),
+    sj.getPoints(),
+    contacts
+  );
+}
 
 const CIRCLE_TO_CONVEX_VEC2_0 = vec2.create(),
   CIRCLE_TO_CONVEX_VEC2_1 = vec2.create(),
-  CIRCLE_TO_CONVEX_VEC2_2 = vec2.create(),
-  CIRCLE_TO_CONVEX_VEC2_3 = vec2.create(),
-  CIRCLE_TO_CONVEX_VEC2_4 = vec2.create(),
-  CIRCLE_TO_CONVEX_VEC2_5 = vec2.create();
+  CIRCLE_TO_CONVEX_VEC2_2 = vec2.create();
 
-export const circleToConvexHandler = <UserData>(
-  si: Circle<UserData>,
-  sj: Convex<UserData>,
-  _contacts: Array<Contact<UserData>>
-) => {
-  const closetPoint = CIRCLE_TO_CONVEX_VEC2_0,
-    axis = CIRCLE_TO_CONVEX_VEC2_1,
-    convexMin = CIRCLE_TO_CONVEX_VEC2_2,
-    convexMax = CIRCLE_TO_CONVEX_VEC2_3,
-    circleMin = CIRCLE_TO_CONVEX_VEC2_4,
-    circleMax = CIRCLE_TO_CONVEX_VEC2_5,
-    xi = si.getPosition();
+function circleToConvex<UserData>(
+  si: Shape<UserData>,
+  sj: Shape<UserData>,
+  xi: vec2,
+  ri: number,
+  points: vec2[],
+  contacts: Array<Contact<UserData>>
+) {
+  const pointOnLine = CIRCLE_TO_CONVEX_VEC2_0,
+    normal = CIRCLE_TO_CONVEX_VEC2_1,
+    tmp0 = CIRCLE_TO_CONVEX_VEC2_2;
 
-  closetToPoint(closetPoint, sj.getPoints(), xi).map((index) => {
-    vec2.sub(axis, xi, closetPoint);
-    projectPointsToAxis(sj.getPoints(), axis, convexMin, convexMax);
-    projectCircleToAxis(xi, si.getRadius(), axis, circleMin, circleMax);
+  closetEdgeToPoint(pointOnLine, points, xi).map(([startIndex, endIndex]) => {
+    const start = points[startIndex],
+      end = points[endIndex],
+      isCircleCenterInPoints = pointInConvex(xi, points);
 
-    if (
-      Math.min(
-        vec2.squaredLength(circleMax) - vec2.squaredLength(convexMin),
-        vec2.squaredLength(circleMin) - vec2.squaredLength(convexMax)
-      ) <= 0.0
-    ) {
-      const edgeA = CIRCLE_TO_CONVEX_VEC2_0,
-        edgeB = CIRCLE_TO_CONVEX_VEC2_1;
+    if (isCircleCenterInPoints || pointInCircle(pointOnLine, xi, ri)) {
+      let depth = 0;
 
-      getEdge(edgeA, edgeB, index, sj.getPoints());
+      if (vec2.equals(start, pointOnLine) || vec2.equals(end, pointOnLine)) {
+        vec2.sub(normal, pointOnLine, xi);
+        depth = ri - vec2.len(normal);
+        vec2.normalize(normal, normal);
+      } else {
+        vec2.set(normal, end[1] - start[1], start[0] - end[0]);
+        vec2.sub(tmp0, pointOnLine, xi);
+
+        if (isCircleCenterInPoints) {
+          depth = ri + vec2.len(tmp0);
+        } else {
+          depth = ri - vec2.len(tmp0);
+        }
+        vec2.normalize(normal, normal);
+      }
+
+      contacts.push(new Contact(si, sj, pointOnLine, normal, depth));
     }
   });
-};
+}
 
 const CIRCLE_TO_CIRCLE_VEC2_0 = vec2.create(),
   CIRCLE_TO_CIRCLE_VEC2_1 = vec2.create(),
   CIRCLE_TO_CIRCLE_VEC2_2 = vec2.create(),
   CIRCLE_TO_CIRCLE_VEC2_3 = vec2.create();
 
-const circleToCircle = <UserData>(
+function circleToCircle<UserData>(
   si: Shape<UserData>,
   sj: Shape<UserData>,
   xi: vec2,
@@ -136,14 +158,14 @@ const circleToCircle = <UserData>(
   ri: number,
   rj: number,
   contacts: Array<Contact<UserData>>
-) => {
-  const d = vec2.sub(CIRCLE_TO_CIRCLE_VEC2_0, xi, xj),
+) {
+  const d = vec2.sub(CIRCLE_TO_CIRCLE_VEC2_0, xj, xi),
     r = ri + rj,
     rsq = r * r,
     dsq = vec2.squaredLength(d);
 
-  if (dsq < rsq) {
-    const depth = Math.sqrt(rsq) - Math.sqrt(dsq),
+  if (dsq <= rsq) {
+    const depth = Math.sqrt(dsq) - Math.sqrt(rsq),
       normal = vec2.normalize(CIRCLE_TO_CIRCLE_VEC2_1, d),
       position = vec2.add(
         CIRCLE_TO_CIRCLE_VEC2_2,
@@ -153,76 +175,78 @@ const circleToCircle = <UserData>(
 
     contacts.push(new Contact(si, sj, position, normal, depth));
   }
-};
+}
 
-const PROJECT_CIRCLE_TO_AXIS_VEC2_0 = vec2.create(),
-  PROJECT_CIRCLE_TO_AXIS_VEC2_1 = vec2.create(),
-  PROJECT_CIRCLE_TO_AXIS_VEC2_2 = vec2.create();
+const CLOSTEST_EDGE_TO_CICRLE_VEC2_0 = vec2.create(),
+  CLOSTEST_EDGE_TO_CICRLE_VEC2_1 = vec2.create();
 
-const projectCircleToAxis = (
-  center: vec2,
-  radius: number,
-  axis: vec2,
-  min: vec2,
-  max: vec2
-) => {
-  const projectedPoint = projectPointOnAxis(
-    PROJECT_CIRCLE_TO_AXIS_VEC2_0,
-    center,
-    axis
-  );
-  const normalizedAxis = vec2.normalize(PROJECT_CIRCLE_TO_AXIS_VEC2_1, axis),
-    offset = vec2.scale(PROJECT_CIRCLE_TO_AXIS_VEC2_2, normalizedAxis, radius);
-
-  vec2.sub(min, projectedPoint, offset);
-  vec2.add(max, projectedPoint, offset);
-};
-
-const PROJECT_POINTS_TO_AXIS_VEC2_0 = vec2.create();
-
-const projectPointsToAxis = (
+function closetEdgeToPoint(
+  out: vec2,
   points: vec2[],
-  axis: vec2,
-  min: vec2,
-  max: vec2
-) => {
-  vec2.set(min, Infinity, Infinity);
-  vec2.set(max, -Infinity, -Infinity);
+  point: vec2
+): Option<[number, number]> {
+  const tmp0 = CLOSTEST_EDGE_TO_CICRLE_VEC2_0,
+    tmp1 = CLOSTEST_EDGE_TO_CICRLE_VEC2_1;
 
-  points.forEach((point) => {
-    const projectedPoint = projectPointOnAxis(
-      PROJECT_POINTS_TO_AXIS_VEC2_0,
-      point,
-      axis
-    );
+  let minDistance = Infinity,
+    startIndex = -1,
+    endIndex = -1;
 
-    vec2.min(min, min, projectedPoint);
-    vec2.max(max, max, projectedPoint);
-  });
-};
-
-const CLOSEST_TO_POINT_VEC2_0 = vec2.create();
-
-const closetToPoint = (out: vec2, points: vec2[], point: vec2) => {
-  let minDistance = Infinity;
-  const minIndex = none<number>();
-
-  points.forEach((p, index) => {
-    const d = vec2.sub(CLOSEST_TO_POINT_VEC2_0, p, point),
-      dsq = vec2.squaredLength(d);
+  for (let i = 0, il = points.length; i < il; i++) {
+    const si = i === 0 ? il - 1 : i - 1,
+      ei = i,
+      dsq = vec2.sqrLen(
+        vec2.sub(
+          tmp1,
+          point,
+          projectPointOntoLine(tmp0, point, points[si], points[ei])
+        )
+      );
 
     if (dsq < minDistance) {
       minDistance = dsq;
-      vec2.copy(out, p);
-      minIndex.replace(index);
+      startIndex = si;
+      endIndex = ei;
+      vec2.copy(out, tmp0);
     }
-  });
+  }
 
-  return minIndex;
-};
+  if (startIndex !== -1) {
+    return some([startIndex, endIndex]);
+  } else {
+    return none();
+  }
+}
 
-const getEdge = (a: vec2, b: vec2, index: number, points: vec2[]) => {
-  const nextIndex = index + 1;
-  vec2.copy(a, points[index]);
-  vec2.copy(b, nextIndex < points.length ? points[nextIndex] : points[0]);
-};
+const PROJECT_POINT_TO_LINE_VEC2_0 = vec2.create(),
+  PROJECT_POINT_TO_LINE_VEC2_1 = vec2.create(),
+  PROJECT_POINT_TO_LINE_VEC2_2 = vec2.create(),
+  PROJECT_POINT_TO_LINE_VEC2_3 = vec2.create();
+
+function projectPointOntoLine(out: vec2, point: vec2, start: vec2, end: vec2) {
+  const line = PROJECT_POINT_TO_LINE_VEC2_0,
+    circleToLineStart = PROJECT_POINT_TO_LINE_VEC2_1,
+    lineNormal = PROJECT_POINT_TO_LINE_VEC2_2,
+    tmp0 = PROJECT_POINT_TO_LINE_VEC2_3;
+
+  vec2.sub(line, end, start);
+  vec2.sub(circleToLineStart, point, start);
+
+  const lineLength = vec2.len(line);
+
+  if (lineLength > 0) {
+    vec2.scale(lineNormal, line, 1 / lineLength);
+  } else {
+    vec2.zero(lineNormal);
+  }
+
+  const dotProject = vec2.dot(circleToLineStart, lineNormal);
+
+  if (dotProject <= 0) {
+    return vec2.copy(out, start);
+  } else if (dotProject >= lineLength) {
+    return vec2.copy(out, end);
+  } else {
+    return vec2.add(out, start, vec2.scale(tmp0, lineNormal, dotProject));
+  }
+}

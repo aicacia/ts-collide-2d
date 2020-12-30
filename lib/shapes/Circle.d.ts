@@ -7,5 +7,7 @@ export declare class Circle<UserData> extends Shape<UserData> {
     getCentroid(out: vec2): vec2;
     getArea(): number;
     getInertia(mass: number): number;
+    contains(point: vec2): boolean;
     update(): this;
 }
+export declare function pointInCircle(point: vec2, center: vec2, radius: number): boolean;
