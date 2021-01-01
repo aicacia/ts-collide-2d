@@ -1,8 +1,9 @@
 .cache
+.github
+.nyc_output/
 .vscode/
-nyc_output/
-dist/
 coverage/
+dist/
 docs/
 lib/
 node_modules/

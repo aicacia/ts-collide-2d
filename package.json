@@ -16,11 +16,12 @@
     "clean": "rm -rf ./lib",
     "lint": "eslint . --fix",
     "doc": "typedoc --entryPoints src",
-    "simple": "parcel examples/simple/index.html"
+    "simple": "parcel examples/simple/index.html",
+    "prettier": "prettier --ignore-path ./.eslintignore --ignore-unknown --write ."
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm run coverage && npm run prepublishOnly"
+      "pre-commit": "npm run prettier && npm run lint && npm run coverage && npm run prepublishOnly"
     }
   },
   "keywords": [
@@ -50,8 +51,8 @@
     "typescript": "4"
   },
   "dependencies": {
-    "@aicacia/ecs": "git+https://git@gitlab.com/aicacia/libs/ts-ecs",
-    "@aicacia/ecs-game": "git+https://git@gitlab.com/aicacia/libs/ts-ecs-game",
+    "@aicacia/ecs": "git+https://git@github.com/aicacia/ts-ecs",
+    "@aicacia/ecs-game": "git+https://git@github.com/aicacia/ts-ecs-game",
     "@aicacia/core": "0",
     "@aicacia/hash": "0",
     "@aicacia/json": "0",
