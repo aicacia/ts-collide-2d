@@ -3,6 +3,5 @@ node_modules
 coverage
 dist
 docs
-lib
 npm-debug.log
 .nyc_output
