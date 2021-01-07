@@ -41,6 +41,9 @@ export class Body<UserData> extends EventEmitter {
   getUserData() {
     return this.userData;
   }
+  getRequiredUserData() {
+    return this.userData.expect("Failed to get required UserData");
+  }
   setUserData(userData: UserData) {
     this.userData.replace(userData);
     return this;

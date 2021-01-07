@@ -20,6 +20,7 @@ export declare class World<UserData> extends EventEmitter {
     removeBody(...bodies: Array<Body<UserData>>): this;
     getBodies(): ReadonlyArray<Body<UserData>>;
     getContacts(): ReadonlyArray<Contact<UserData>>;
+    contains(point: vec2): Shape<UserData>[];
     maintain(): this;
     update(delta: number): this;
     private addBodyNow;
@@ -27,3 +28,5 @@ export declare class World<UserData> extends EventEmitter {
     private getHash;
 }
 import { Body } from "./Body";
+import { vec2 } from "gl-matrix";
+import { Shape } from "./shapes";

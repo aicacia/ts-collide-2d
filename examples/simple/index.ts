@@ -59,6 +59,36 @@ class StickToMouse extends Component {
   }
 }
 
+class MouseHitCheck extends Component {
+  static requiredComponents = [[Transform2D, Transform3D]];
+  static requiredPlugins = [Input];
+
+  onUpdate() {
+    const input = this.getRequiredPlugin(Input),
+      world = this.getRequiredPlugin(World2D),
+      camera = this.getRequiredScene()
+        .getRequiredManager(Camera2DManager)
+        .getRequiredActive(),
+      mousePosition = vec2.set(
+        VEC2_0,
+        input.getButtonValue("mouse-x"),
+        input.getButtonValue("mouse-y")
+      );
+
+    camera.toWorld(mousePosition, mousePosition);
+    if (input.isDown("mouse-0")) {
+      world
+        .getWorld()
+        .contains(mousePosition)
+        .forEach((shape) => {
+          console.log(shape.getRequiredBody().getRequiredUserData());
+        });
+    }
+
+    return this;
+  }
+}
+
 function onLoad() {
   const canvas = new WebCanvas(
       document.getElementById("canvas") as HTMLCanvasElement
@@ -73,7 +103,10 @@ function onLoad() {
               .setRenderable(false)
               .setLocalScale2(vec2.fromValues(2, 2)),
             new Camera2DControl(),
-            new Camera2D().setBackground(vec4.fromValues(0.98, 0.98, 0.98, 1.0))
+            new Camera2D().setBackground(
+              vec4.fromValues(0.98, 0.98, 0.98, 1.0)
+            ),
+            new MouseHitCheck()
           ),
         new Entity().addComponent(
           new StickToMouse(),

@@ -18,6 +18,7 @@ export declare class Body<UserData> extends EventEmitter {
     protected aabbNeedsUpdate: boolean;
     protected shapes: Array<Shape<UserData>>;
     getUserData(): Option<UserData>;
+    getRequiredUserData(): UserData;
     setUserData(userData: UserData): this;
     UNSAFE_setWorld(world: World<UserData>): this;
     UNSAFE_removeWorld(): this;

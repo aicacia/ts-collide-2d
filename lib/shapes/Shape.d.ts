@@ -20,6 +20,7 @@ export declare abstract class Shape<UserData> extends EventEmitter {
     protected elasticity: number;
     UNSAFE_setBody(body: Body<UserData>): this;
     getBody(): Option<Body<UserData>>;
+    getRequiredBody(): Body<UserData>;
     getFilterMask(): number;
     setFilterMask(filterMask: number): this;
     getFilterGroup(): number;

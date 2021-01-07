@@ -46,6 +46,18 @@ export class World<UserData> extends EventEmitter {
     return this.contacts;
   }
 
+  contains(point: vec2): Shape<UserData>[] {
+    const shapes: Shape<UserData>[] = [];
+    for (const body of this.bodies) {
+      for (const shape of body.getShapes()) {
+        if (shape.contains(point)) {
+          shapes.push(shape);
+        }
+      }
+    }
+    return shapes;
+  }
+
   maintain() {
     this.emit("maintain");
 
@@ -130,3 +142,5 @@ export class World<UserData> extends EventEmitter {
 }
 
 import { Body } from "./Body";
+import { vec2 } from "gl-matrix";
+import { Shape } from "./shapes";

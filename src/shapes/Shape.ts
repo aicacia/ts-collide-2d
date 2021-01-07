@@ -36,6 +36,9 @@ export abstract class Shape<UserData> extends EventEmitter {
   getBody() {
     return this.body;
   }
+  getRequiredBody() {
+    return this.body.expect("Failed to get required Body");
+  }
 
   getFilterMask() {
     return this.filterMask;
